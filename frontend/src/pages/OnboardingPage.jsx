@@ -1,18 +1,16 @@
-import React from "react";
-import useAuthUser from "../hooks/useAuthUser";
-import { useMutation } from "@tanstack/react-query";
-import toast from "react-hot-toast";
 import { useState } from "react";
-import { completeOnboarding } from "../lib/api.js";
-import { useQueryClient } from "@tanstack/react-query";
+import useAuthUser from "../hooks/useAuthUser";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
+import { completeOnboarding } from "../lib/api";
 import {
-  CameraIcon,
   LoaderIcon,
   MapPinIcon,
   ShipWheelIcon,
   ShuffleIcon,
 } from "lucide-react";
-import { LANGUAGES } from "../constants/index.js";
+import { LANGUAGES } from "../constants";
+
 const OnboardingPage = () => {
   const { authUser } = useAuthUser();
   const queryClient = useQueryClient();
@@ -29,32 +27,59 @@ const OnboardingPage = () => {
   const { mutate: onboardingMutation, isPending } = useMutation({
     mutationFn: completeOnboarding,
     onSuccess: () => {
-      toast.success("Profile onboarded successfully!");
+      toast.success("Profile onboarded successfully");
       queryClient.invalidateQueries({ queryKey: ["authUser"] });
     },
 
     onError: (error) => {
-      toast.error(error.response.data.message || "Failed to complete onboarding");
-    }
+      toast.error(error.response.data.message);
+    },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     onboardingMutation(formState);
   };
 
   const handleRandomAvatar = () => {
-    const idx = Math.floor(Math.random() * 100) + 1; // Random number between 1 and 100
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
-    setFormState({...formState,profilePic: randomAvatar});
-    toast.success("Random avatar generated!");
+    const names = [
+      "Brian",
+      "Easton",
+      "Katherine",
+      "Sarah",
+      "Sarah",
+      "Sawyer",
+      "Riley",
+      "George",
+      "Jade",
+      "Oliver",
+      "Christian",
+      "Jack",
+      "Brooklynn",
+      "Sara",
+      "Eden",
+      "Andrea",
+      "Destiny",
+      "Luis",
+      "Adrian",
+      "Ryan",
+      "Robert",
+    ];
+    const idx = Math.floor(Math.random() * names.length); // gives a number from 0 to names.length - 1
+    const randomName = names[idx];
+
+    const randomAvatar = `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${randomName}`;
+
+    setFormState({ ...formState, profilePic: randomAvatar });
+    toast.success("Random profile picture generated!");
   };
 
   return (
     <div className="min-h-screen bg-base-100 flex items-center justify-center p-4">
       <div className="card bg-base-200 w-full max-w-3xl shadow-xl">
         <div className="card-body p-6 sm:p-8">
-          <h1 className="text-2xl font-bold sm:text-3xl text-center mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6">
             Complete Your Profile
           </h1>
 
@@ -66,7 +91,7 @@ const OnboardingPage = () => {
                 {formState.profilePic ? (
                   <img
                     src={formState.profilePic}
-                    alt="Profile"
+                    alt="Profile Preview"
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -88,6 +113,7 @@ const OnboardingPage = () => {
                 </button>
               </div>
             </div>
+
             {/* FULL NAME */}
             <div className="form-control">
               <label className="label">
@@ -96,13 +122,12 @@ const OnboardingPage = () => {
               <input
                 type="text"
                 name="fullName"
-                placeholder="Your Full Name"
-                className="input input-bordered w-full"
                 value={formState.fullName}
                 onChange={(e) =>
                   setFormState({ ...formState, fullName: e.target.value })
                 }
-                required
+                className="input input-bordered w-full"
+                placeholder="Your full name"
               />
             </div>
 
@@ -195,12 +220,12 @@ const OnboardingPage = () => {
               </div>
             </div>
 
-            {/* SUBMIT */}
+            {/* SUBMIT BUTTON */}
 
             <button
               className="btn btn-primary w-full"
-              type="submit"
               disabled={isPending}
+              type="submit"
             >
               {!isPending ? (
                 <>
@@ -220,5 +245,4 @@ const OnboardingPage = () => {
     </div>
   );
 };
-
 export default OnboardingPage;

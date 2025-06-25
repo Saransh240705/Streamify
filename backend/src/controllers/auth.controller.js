@@ -27,8 +27,33 @@ export async function signup(req, res) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const idx = Math.floor(Math.random() * 100) + 1; // Random index for profile picture
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    const names = [
+      "Brian",
+      "Easton",
+      "Katherine",
+      "Sarah",
+      "Sarah",
+      "Sawyer",
+      "Riley",
+      "George",
+      "Jade",
+      "Oliver",
+      "Christian",
+      "Jack",
+      "Brooklynn",
+      "Sara",
+      "Eden",
+      "Andrea",
+      "Destiny",
+      "Luis",
+      "Adrian",
+      "Ryan",
+      "Robert",
+    ];
+    const idx = Math.floor(Math.random() * names.length); // gives a number from 0 to names.length - 1
+    const randomName = names[idx];
+
+    const randomAvatar = `https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${randomName}`;
 
     const newUser = await User.create({
       email,
